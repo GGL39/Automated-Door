@@ -1,1 +1,62 @@
+#include <DHT.h>
 
+// digital IO pin 7
+#define DHTPIN 7
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  Serial.println("DHT11 Test");
+
+  dht.begin();
+
+}
+
+void loop() {
+
+  // timestamp
+  unsigned long elapsedTime = millis();
+
+  // convert ms to h,m,s
+  unsigned long seconds = elapsedTime / 1000;
+  unsigned long minutes = seconds / 60;
+  unsigned long hours = minutes / 60;
+
+  // calculate remaining minutes and seconds
+  seconds %= 60;
+  minutes %= 60;
+
+  // print timestamp
+  Serial.print("Timestamp: ");
+  Serial.print(hours);
+  Serial.print(":");
+  if (minutes < 10) Serial.print("0");
+  Serial.print(minutes);
+  Serial.print(":");
+  if (seconds < 10) Serial.print("0");
+  Serial.print(seconds);
+  Serial.print(" - ");
+
+  // put your main code here, to run repeatedly:
+  float temperature = dht.readTemperature(); 
+
+  float humidity = dht.readHumidity();
+
+  if (isnan(humidity) || isnan(temperature)) {
+    Serial.println("Failed to read from sensor!");
+    return;
+  }
+
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.print("%\t");
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" C");
+
+  // Wait for 10 seconds before the next reading.
+  delay(10000);
+}
